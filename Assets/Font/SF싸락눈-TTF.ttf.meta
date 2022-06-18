@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 7e74e9f3fae1b644fa7851a6f2e0f824
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: SF_HailSnow
+  fontNames:
+  - SF_HailSnow
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 1ad096d064084094aa68b28afc956a82, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
