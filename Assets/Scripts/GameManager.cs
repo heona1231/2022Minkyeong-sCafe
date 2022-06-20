@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public float timer;
     public float customerState;
     public float satisfy = 50.0f;
+    public bool isCoroutineActive = false;
 
     void Start()
     {
@@ -76,13 +77,16 @@ public class GameManager : MonoBehaviour
                         {
                             if (customer.randomMenu == resultBeverage.resultBeverageId)
                             {
-                                Debug.Log("c");
                                 satisfy += customerState;
+                                Debug.Log(customer.randomMenu);
+                                Debug.Log(resultBeverage.resultBeverageId);
+                                Debug.Log(satisfy);
                             }
                             else
                             {
                                 satisfy -= 10.0f;
                             }
+                            isCoroutineActive = false;
                             customer.ResetCustomer();
                             resultBeverage.ResetBeverage();
                         }
@@ -131,9 +135,11 @@ public class GameManager : MonoBehaviour
                 customerState = -10.0f;
             }
         }
-        else
+        else if(!customer.alreadyExit && !isCoroutineActive)
         {
             StartCoroutine("CustomerGenerator", (100.0f - satisfy) / 50);
+            isCoroutineActive = true;
+            timer = 0.0f;
         }
     }
 
@@ -146,9 +152,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator CustomerGenerator(float spantime)
     {
-        yield return new WaitForSecondsRealtime(10.0f + spantime);
-        //customer.CreateCustomer();
-        customer.alreadyExit = true;
+        yield return new WaitForSecondsRealtime(5.0f + spantime);
+        customer.CreateCustomer();
+        Debug.Log("s");
     }
 
     public void HomeButton()
