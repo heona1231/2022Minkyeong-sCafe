@@ -29,8 +29,6 @@ public class GameManager : MonoBehaviour
         ingredientList.Add(2, "우유");
         ingredientList.Add(3, "카카오");
         ingredientList.Add(4, "커피");
-
-        customer.CreateCustomer();
     }
 
     void Update()
@@ -78,6 +76,7 @@ public class GameManager : MonoBehaviour
                         {
                             if (customer.randomMenu == resultBeverage.resultBeverageId)
                             {
+                                Debug.Log("c");
                                 satisfy += customerState;
                             }
                             else
@@ -134,8 +133,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("d");
-            customer.alreadyExit = true;
             StartCoroutine("CustomerGenerator", (100.0f - satisfy) / 50);
         }
     }
@@ -149,8 +146,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator CustomerGenerator(float spantime)
     {
-        yield return new WaitForSecondsRealtime(2.5f + spantime);
-        customer.CreateCustomer();
+        yield return new WaitForSecondsRealtime(10.0f + spantime);
+        //customer.CreateCustomer();
+        customer.alreadyExit = true;
     }
 
     public void HomeButton()
