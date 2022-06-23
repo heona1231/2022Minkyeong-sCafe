@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public GameObject recipeBook;
     public TextMeshProUGUI popupMessage;
     public GameObject satisfyGauge;
+    public GameObject stopPage;
 
     public float timer;
     public float customerState;
@@ -34,6 +35,85 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+#if UNITY_ANDROID
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            StopButton();
+
+        }
+
+        if(Input.touchCount>0 && Input.touches[0].phase == TouchPhase.Began)
+        {
+            Ray ray1 = Camera.main.ScreenPointToRay(Input.touches[0].position);
+            RaycastHit hit1;
+            if(Physics.Raycast(ray1, out hit1))
+            {
+                if(hit1.transform.tag == "Object")
+                {
+                    int id = hit1.collider.gameObject.GetComponent<ObjectInfo>().objectId;
+
+                    if (id == 9)
+                    {
+                        if (resultBeverage.alreadyBeverage)
+                        {
+                            StartCoroutine("PopupMessage", "이미 만들어진 음료가 있습니다\n(음료를 다시 만드려면 먼저 쓰레기통에 버려주세요)");
+                        }
+                        else if (cup.activeSelf)
+                        {
+                            StartCoroutine("PopupMessage", "재료를 선택해주세요");
+                        }
+                        else
+                        {
+                            mixer.CupActive(true);
+                        }
+                    }
+                    else if (id == 8)
+                    {
+                        mixer.CupActive(false);
+                        resultBeverage.ResetBeverage();
+                        StartCoroutine("PopupMessage", "음료 버리기");
+                    }
+                    else if (id == 7)
+                    {
+                        recipeBook.SetActive(true);
+                    }
+                    else if (id == 6)
+                    {
+                        if (customer.alreadyExit)
+                        {
+                            if (customer.randomMenu == resultBeverage.resultBeverageId)
+                            {
+                                satisfy += customerState;
+                            }
+                            else
+                            {
+                                satisfy -= 10.0f;
+                            }
+                            isCoroutineActive = false;
+                            customer.ResetCustomer();
+                            resultBeverage.ResetBeverage();
+                        }
+                    }
+                    else if (mixer.index > 2)
+                    {
+                        StartCoroutine("PopupMessage", "컵이 가득 찼습니다");
+                    }
+                    else
+                    {
+                        if (cup.activeSelf)
+                        {
+                            mixer.AddIngredients(id);
+                        }
+                        else
+                        {
+                            StartCoroutine("PopupMessage", "컵이 없습니다");
+                        }
+                    }
+                }
+            }
+        }
+#endif
+#if UNITY_EDITOR
         if (Input.GetMouseButtonUp(0))
         {
             RaycastHit hit;
@@ -78,9 +158,6 @@ public class GameManager : MonoBehaviour
                             if (customer.randomMenu == resultBeverage.resultBeverageId)
                             {
                                 satisfy += customerState;
-                                Debug.Log(customer.randomMenu);
-                                Debug.Log(resultBeverage.resultBeverageId);
-                                Debug.Log(satisfy);
                             }
                             else
                             {
@@ -109,6 +186,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+#endif
 
         if (satisfy > 100.0f) satisfy = 100.0f;
         if (satisfy < 0.0f) satisfy = 0.0f;
@@ -118,11 +196,11 @@ public class GameManager : MonoBehaviour
         if (customer.alreadyExit)
         {
             timer += Time.deltaTime;
-            if(timer < 4.0f)
+            if(timer < 2.0f)
             {
-                customerState = 20.0f;
+                customerState = 15.0f;
             }
-            else if(timer > 4.0f && timer < 8.0f)
+            else if(timer > 2.0f && timer < 8.0f)
             {
                 customerState = 10.0f;
             }
@@ -130,9 +208,16 @@ public class GameManager : MonoBehaviour
             {
                 customerState = 0.0f;
             }
-            else
+            else if(timer > 12.0f && timer < 15.0f)
             {
                 customerState = -10.0f;
+            }
+            else
+            {
+                satisfy -= 10.0f;
+                isCoroutineActive = false;
+                customer.ResetCustomer();
+                resultBeverage.ResetBeverage();
             }
         }
         else if(!customer.alreadyExit && !isCoroutineActive)
@@ -154,11 +239,27 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(5.0f + spantime);
         customer.CreateCustomer();
-        Debug.Log("s");
     }
 
-    public void HomeButton()
+    public void ExitButton()
     {
-        SceneManager.LoadScene("StartScene");
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+#if UNITY_ANDROID
+        System.Diagnostics.Process.GetCurrentProcess().Kill();
+#endif
+        Application.Quit();
+    }
+
+    public void StopButton()
+    {
+        stopPage.SetActive(true);
+        Time.timeScale = 0;
+    }
+    public void ResumeButton()
+    {
+        stopPage.SetActive(false);
+        Time.timeScale = 1;
     }
 }

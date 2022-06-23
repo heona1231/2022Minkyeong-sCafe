@@ -46,7 +46,6 @@ public class Mixer : MonoBehaviour
             {
                 ingredientsUi[index].text = gameManager.ingredientList[id];
                 mixIngredientsList[index++] = id;
-                gameManager.StartCoroutine("PopupMessage", gameManager.ingredientList[id]);
             }
             else
             {
