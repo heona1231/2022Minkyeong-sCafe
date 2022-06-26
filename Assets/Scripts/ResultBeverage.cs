@@ -43,7 +43,7 @@ public class ResultBeverage : MonoBehaviour
         if (!beverageList.TryGetValue(resultBeverageCode, out resultBeverageId))
         {
             resultBeverageId = 0;
-            resultBeverageObject.GetComponent<SpriteRenderer>().sprite = beverageSprites[1];
+            resultBeverageObject.GetComponent<SpriteRenderer>().sprite = beverageSprites[0];
         }
         else
         {

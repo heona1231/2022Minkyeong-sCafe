@@ -18,8 +18,9 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI popupMessage;
     public GameObject satisfyGauge;
     public GameObject stopPage;
+    public GameObject gameoverPage;
 
-    public float timer;
+    public float customerTimer;
     public float customerState;
     public float satisfy = 50.0f;
     public bool isCoroutineActive = false;
@@ -87,7 +88,7 @@ public class GameManager : MonoBehaviour
                             }
                             else
                             {
-                                satisfy -= 10.0f;
+                                satisfy -= 20.0f;
                             }
                             isCoroutineActive = false;
                             customer.ResetCustomer();
@@ -189,28 +190,28 @@ public class GameManager : MonoBehaviour
 #endif
 
         if (satisfy > 100.0f) satisfy = 100.0f;
-        if (satisfy < 0.0f) satisfy = 0.0f;
-
+        if (satisfy <= 0.0f)
+        {
+            gameoverPage.SetActive(true);
+            Time.timeScale = 0;
+        }
+        
         satisfyGauge.GetComponent<Image>().fillAmount = satisfy / 100.0f;
 
         if (customer.alreadyExit)
         {
-            timer += Time.deltaTime;
-            if(timer < 2.0f)
+            customerTimer += Time.deltaTime;
+            if(customerTimer < 2.0f)
             {
                 customerState = 15.0f;
             }
-            else if(timer > 2.0f && timer < 8.0f)
+            else if(customerTimer > 2.0f && customerTimer < 8.0f)
             {
-                customerState = 10.0f;
+                customerState = 5.0f;
             }
-            else if (timer > 8.0f && timer < 12.0f)
+            else if (customerTimer > 8.0f && customerTimer < 10.0f)
             {
-                customerState = 0.0f;
-            }
-            else if(timer > 12.0f && timer < 15.0f)
-            {
-                customerState = -10.0f;
+                customerState = -15.0f;
             }
             else
             {
@@ -224,7 +225,7 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine("CustomerGenerator", (100.0f - satisfy) / 50);
             isCoroutineActive = true;
-            timer = 0.0f;
+            customerTimer = 0.0f;
         }
     }
 
@@ -261,5 +262,9 @@ public class GameManager : MonoBehaviour
     {
         stopPage.SetActive(false);
         Time.timeScale = 1;
+    }
+    public void ReRodeButton()
+    {
+        SceneManager.LoadScene("StartScene");
     }
 }
